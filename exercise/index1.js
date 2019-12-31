@@ -1,69 +1,56 @@
 const fs = require("fs");
 const http = require("http");
+const objjs = require("./objjs");
 
-let myObj = [
-  {
-    name: "Laslaa",
-    firstname: "Mohammed",
-    age: 32
-  },
-  {
-    name: "Laslaa",
-    firstname: "Assia",
-    age: 31
-  },
-  {
-    name: "Laslaa",
-    firstname: "Zakariya",
-    age: 3
-  },
-  {
-    name: "Laslaa",
-    firstname: "Maryam",
-    age: 1
-  }
-];
+// This step are all optional and they aren't representative of the real goal. They are only to exercice myself.
 
+// 1 Read the imported object by the module objjs and stringify it
 let myJson = obj => {
   return new Promise((resolve, reject) => {
-    resolve(JSON.stringify(obj));
+    const x = JSON.stringify(obj);
+    resolve(x);
   });
 };
 
-/*const myfunction = async () => {
-  const data = await myJson(myObj);
-  fs.writeFile(`${__dirname}/first.json`, data, err => {
-    if (err) console.log(err);
-  });
-};
+// 2 write it in the json file
 
-myfunction();*/
-
-const readmee = path => {
+const writeinJsonFile = (file, data) => {
   return new Promise((resolve, reject) => {
-    
-      fs.readFile(path, "utf-8", (err, data) => {
-        if (err) throw err;
-        resolve(data);
-      })
+    fs.writeFile(file, data, err => {
+      if (err) reject("I could not write that file");
+      resolve("Success !");
+    });
   });
 };
 
-let mdon;
+// 3 read this file to import this data
 
-(async () => {
-  const x = await readmee(`${__dirname}/first.json`);
-  mdon= x;
-})();
+const readinjsonFile = path => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, "utf-8", (err, data) => {
+      if (err) reject("I could not find that path");
+      resolve(data);
+    });
+  });
+};
 
-
+// 4 execute this function step in http.createServer to put that data in the client browser
 
 const server = http
   .createServer((req, res) => {
     res.writeHead(200, {
       "Content-type": "application/json"
     });
-    res.end(mdon);
+    const getandresolve = async () => {
+      const monobj = await myJson(objjs);
+      const writejson = await writeinJsonFile(
+        `${__dirname}/first.json`,
+        monobj
+      );
+      const read = await readinjsonFile(`${__dirname}/first.json`);
+      res.end(read);
+    };
+    getandresolve();
   })
   .listen(8000, "127.0.0.1", () => {
     console.log("Listening to requests on port 8000");
