@@ -54,7 +54,7 @@ const slugs = dataObject.map(el =>
     lower: true
   })
 );
-console.log(slugs);
+
 const server = http.createServer((req, res) => {
   const { query, pathname } = url.parse(req.url, true);
 
